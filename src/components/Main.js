@@ -28,6 +28,12 @@ imageDatas = (function genImageUrl(imageDataArr) {
 function getRangeRandom(low, high) {
 	return Math.ceil(Math.random() * (high - low) + low)
 }
+/*
+ *获取0～30deg 之间的一个任意正负值
+ */
+function get30DegRandom() {
+	return ((Math.random() > 0.5 ? '' : '-') + Math.ceil(Math.random() * 30));ßßß
+}
 // class ImgFigure extends React.Component {
 //   render() {
 //     return (
@@ -42,21 +48,47 @@ function getRangeRandom(low, high) {
 // }
 
 var ImgFigure = React.createClass({
-  render: function() {
-  	var styleObj = {}
-  	//如果props属性中指定了这张图片的位置信息，则使用
-  	if (this.props.arrange.pos) {
-  		styleObj = this.props.arrange.pos
+	/*
+	 *imgFigure的点击处理函数
+	 */
+	handleClick: function (e) {
+		this.props.inverse()
+
+
+		e.stopPropagation();
+		e.preventDefault();
+	},
+  	render: function() {
+	  	var styleObj = {}
+	  	//如果props属性中指定了这张图片的位置信息，则使用
+	  	if (this.props.arrange.pos) {
+	  		styleObj = this.props.arrange.pos
+	  	}
+	  	//如果图片的旋转角度有值并且不为0，添加旋转角度
+	  	if(this.props.arrange.rotate) {
+	  		['MozTransform', 'msTransfrom', 'WebkitTransfrom', 'transform'].forEach(function (value) {
+	  			styleObj[value] = 'rotate(' + this.props.arrange.rotate + 'deg)'
+	  		}.bind(this))
+	  		
+	  	}
+	  	debugger;
+	  	var imgFigureClassName = "img-figure";
+	  	imgFigureClassName += this.props.arrange.isInverse ? ' is-inverse' : ''
+
+	    return (
+		    <figure className={imgFigureClassName} style={styleObj} onClick={this.handleClick}>
+		    	<img src={this.props.data.imageUrl}/>
+		    	<figcaption>
+		    		<h2 className="img-title">{this.props.data.title}</h2>
+		    		<div className="img-back" onClick={this.handleClick}>
+		    			<p>
+		    				{this.props.data.desc}
+		    			</p>
+		    		</div>
+		    	</figcaption>
+		    </figure>
+	    );
   	}
-    return (
-	    <figure className="img-figure" style={styleObj}>
-	    	<img src={this.props.data.imageUrl}/>
-	    	<figcaption>
-	    		<h2 className="img-title">{this.props.data.title}</h2>
-	    	</figcaption>
-	    </figure>
-    );
-  }
 
 })
 
@@ -79,8 +111,18 @@ var GalleryByReactApp = React.createClass({
 		}
 	},
 
-
-
+	/*
+	 *反转图片
+	 *@param index 输入当前被执行inverse操作的图片信息数组的index值
+	 *return {function} 这是一个闭包函数，其内return 一个真正待被执行的函数
+	 */
+	inverse: function (index) {
+		return function () {
+			var imgsArrangeArr = this.state.imgsArrangeArr;
+			imgsArrangeArr[index].isInverse = !imgsArrangeArr[index].isInverse;
+			this.state.imgsArrangeArr = imgsArrangeArr;
+		}.bind(this)
+	},
 	getInitialState: function() {
 		return {
 			imgsArrangeArr: [
@@ -88,7 +130,9 @@ var GalleryByReactApp = React.createClass({
 					pos: {
 						left: '0',
 						top: '0'
-					}
+					},
+					rotate: 0 ,  //旋转角度
+					isInverse: false //图片正反面
 				}*/
 			]
 		}
@@ -138,7 +182,7 @@ var GalleryByReactApp = React.createClass({
 	 *@param centerIndex 指定居中那个图片
 	 */
 	rearrange: function (centerIndex) {
-		debugger;
+		// debugger;
 		var imgsArrangeArr = this.state.imgsArrangeArr,
 			Constant = this.Constant,
 			centerPos = Constant.centerPos,
@@ -161,6 +205,12 @@ var GalleryByReactApp = React.createClass({
 			//首先居中，centerIndex 的图片
 			imgsArrangeCenterArr[0].pos = centerPos;
 
+
+			//居中的图片，centerIndex 不需要旋转
+			imgsArrangeCenterArr[0].rotate = 0;
+
+
+
 			//取出要布局上侧的图片的状态信息
 			// topImgSpliceIndex = Math.ceil(Math.random() * imgsArrangeArr.length)
 			topImgSpliceIndex = Math.ceil(Math.random() * (imgsArrangeArr.length - topImgNum));
@@ -168,11 +218,17 @@ var GalleryByReactApp = React.createClass({
 
 			//布局位于上侧的图片
 			imgsArrangeTopArr.forEach(function (value, key) {
-				imgsArrangeTopArr[key].pos = {
-					top: getRangeRandom(vPosRangeTopY[0], vPosRangeTopY[1]),
-					left: getRangeRandom(vPosRangeX[0], vPosRangeX[1])
+				imgsArrangeTopArr[key] = {
+					pos: {
+						top: getRangeRandom(vPosRangeTopY[0], vPosRangeTopY[1]),
+						left: getRangeRandom(vPosRangeX[0], vPosRangeX[1])
+					},
+					rotate: get30DegRandom()
 				}
 			})
+
+
+
 
 			//布局左右两侧的图片
 			for (var i = 0, j = imgsArrangeArr.length, k = j / 2; i < j; i++) {
@@ -187,9 +243,12 @@ var GalleryByReactApp = React.createClass({
 				}
 				// debugger;
 
-				imgsArrangeArr[i].pos = {
-					top: getRangeRandom(hPosRangeY[0], hPosRangeY[1]),
-					left: getRangeRandom(hPosRangeLOPX[0], hPosRangeLOPX[1])
+				imgsArrangeArr[i] = {
+					pos: {
+						top: getRangeRandom(hPosRangeY[0], hPosRangeY[1]),
+						left: getRangeRandom(hPosRangeLOPX[0], hPosRangeLOPX[1])
+					},
+					rotate: get30DegRandom()
 				}
 			}
 
@@ -216,12 +275,14 @@ var GalleryByReactApp = React.createClass({
 			if(!this.state.imgsArrangeArr[key]) {
 				this.state.imgsArrangeArr[key] = {
 					pos: {
-						left: '0',
-						top: '0'
-					}
+						left: 0,
+						top: 0
+					},
+					rotate: 0,
+					isInverse: false
 				}
 			}
-			ImgFigures.push(<ImgFigure key={key} data={value} ref={'imgFigure' + key} arrange={this.state.imgsArrangeArr[key]}/>);
+			ImgFigures.push(<ImgFigure key={key} data={value} ref={'imgFigure' + key} arrange={this.state.imgsArrangeArr[key]} inverse={this.inverse(key)}/>);
 		}.bind(this));
 		
 		//方法2
