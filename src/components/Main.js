@@ -66,7 +66,7 @@ var GalleryByReactApp = React.createClass({
 	Constant: {
 		centerPos: {
 			left: 0,
-			right: 0
+			top: 0
 		},
 		hPosRange: {	//水平方向的取值范围
 			leftSecX: [0, 0],
@@ -105,21 +105,23 @@ var GalleryByReactApp = React.createClass({
 			halfStageH = Math.ceil(stageH / 2);
 
 		//拿到imageFigure的大小
-		debugger;
-		var imgFigureDOM = this.refs.imgFigure1,
+		// debugger;
+		var imgFigureDOM = this.refs.imgFigure.children[0],
 			imgW = imgFigureDOM.scrollWidth,
 			imgH = imgFigureDOM.scrollHeight,
+			// imgW = 380,
+			// imgH = 300,
 			halfImgW = Math.ceil(imgW / 2),
 			halfImgH = Math.ceil(imgH / 2);
 		//计算中心位置点
 		this.Constant.centerPos = {
 			left: halfStageW - halfImgW,
-			right: halfStageH - halfImgH
+			top: halfStageH - halfImgH
 		}
 		//计算左侧，右侧区域图片位置的取值范围
 		this.Constant.hPosRange = {
 			leftSecX: [ - halfImgW, halfStageW - halfImgW * 3],
-			rightSecx: [halfStageW + halfImgW, stageW - halfImgW],
+			rightSecX: [halfStageW + halfImgW, stageW - halfImgW],
 			y: [ - halfImgH, stageH - halfImgH]
 		}
 		//计算上部区域图片位置的取值范围
@@ -136,6 +138,7 @@ var GalleryByReactApp = React.createClass({
 	 *@param centerIndex 指定居中那个图片
 	 */
 	rearrange: function (centerIndex) {
+		debugger;
 		var imgsArrangeArr = this.state.imgsArrangeArr,
 			Constant = this.Constant,
 			centerPos = Constant.centerPos,
@@ -182,6 +185,8 @@ var GalleryByReactApp = React.createClass({
 				}else {
 					hPosRangeLOPX = hPosRangeRightSecX;
 				}
+				// debugger;
+
 				imgsArrangeArr[i].pos = {
 					top: getRangeRandom(hPosRangeY[0], hPosRangeY[1]),
 					left: getRangeRandom(hPosRangeLOPX[0], hPosRangeLOPX[1])
@@ -193,7 +198,7 @@ var GalleryByReactApp = React.createClass({
 				imgsArrangeArr.splice(topImgSpliceIndex, 0, imgsArrangeTopArr[0])
 			}
 
-			imgsArrangeTopArr.splice(centerIndex, 0, imgsArrangeCenterArr[0])
+			imgsArrangeArr.splice(centerIndex, 0, imgsArrangeCenterArr[0])
 
 			this.setState({
 				imgsArrangeArr: imgsArrangeArr
@@ -229,7 +234,7 @@ var GalleryByReactApp = React.createClass({
 
 		return (
 			<section className="stage" ref="stage">
-				<section className="img-sec">
+				<section className="img-sec" ref="imgFigure">
 					{ImgFigures}
 				</section>
 				<nav className="constructor-nav">
