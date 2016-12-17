@@ -55,6 +55,10 @@ function getDefaultModules() {
       {
         test: /\.json$/,
         loader: 'json-loader'
+      },
+      {
+        test: /\.(woff2?|eot|ttf|otf|svg)(\?.*)?$/,
+        loader: 'url-loader'
       }
     ]
   };
