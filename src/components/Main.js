@@ -100,8 +100,6 @@ var ImgFigure = React.createClass({
 	 *imgFigure的点击处理函数
 	 */
 	handleClick: function (e) {
-		// debugger;
-		// console.log(this.props.inverse())
 		if(this.props.arrange.isCenter) {
 			this.props.inverse()
 		}else {
@@ -183,7 +181,6 @@ var GalleryByReactApp = React.createClass({
 			this.setState({
 				imgsArrangeArr: imgsArrangeArr
 			})
-			return 'success'
 		}.bind(this)
 	},
 
