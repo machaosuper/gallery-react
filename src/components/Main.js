@@ -66,7 +66,7 @@ function get30DegRandom() {
 
 var ControllerUnit =React.createClass({
 	handleClick: function (e) {
-		
+
 		if(this.props.arrange.isCenter) {
 			this.props.inverse()
 		}else {
@@ -369,7 +369,7 @@ var GalleryByReactApp = React.createClass({
 				}
 			}
 			ImgFigures.push(<ImgFigure key={key} data={value} ref={'imgFigure' + key} arrange={this.state.imgsArrangeArr[key]} inverse={this.inverse(key)} center={this.center(key)}/>);
-			constructorUnits.push(<ControllerUnit arrange={this.state.imgsArrangeArr[key]} inverse={this.inverse(key)} center={this.center(key)}/>)
+			constructorUnits.push(<ControllerUnit key={key} arrange={this.state.imgsArrangeArr[key]} inverse={this.inverse(key)} center={this.center(key)}/>)
 		}.bind(this));
 
 		
