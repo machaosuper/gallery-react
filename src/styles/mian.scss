@@ -79,6 +79,7 @@ html, body{
 					transform: rotateY(180deg);
 					background-color: #fff;
 	    			box-sizing: border-box;
+	    			backface-visibility: hidden;
 				}
 			}
 
