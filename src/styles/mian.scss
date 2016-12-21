@@ -60,6 +60,7 @@ html, body{
 				transform: translate(380px) rotateY(180deg)
 			}
 			img{
+				backface-visibility: hidden;
 				width: 100%;
 				height: 100%;
 			}
